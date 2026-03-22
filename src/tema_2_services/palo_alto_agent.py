@@ -239,7 +239,7 @@ class RAGAssistant:
 
     def is_relevant(self, user_input: str) -> bool:
         """Verifica daca intrarea utilizatorului e despre Palo Alto / securitate retea."""
-        return self.calculate_similarity(user_input) >= 0.45
+        return self.calculate_similarity(user_input) >= 0.35
 
     def assistant_response(self, user_message: str) -> str:
         """Directioneaza mesajul utilizatorului catre calea potrivita."""
@@ -271,15 +271,10 @@ if __name__ == "__main__":
     # Test relevant - NGFW
     print("=== TEST RELEVANT (NGFW) ===")
     print(assistant.assistant_response(
-        "How do I configure a security policy rule on PAN-OS to allow HTTP traffic between zones?"
-    ))
-
-    print("\n=== TEST RELEVANT (GlobalProtect) ===")
-    print(assistant.assistant_response(
-        "What are the steps to configure a GlobalProtect Gateway?"
+        "How do I configure a Palo Alto PA-440 firewall using Zero Touch Provisioning (ZTP)?"
     ))
 
     print("\n=== TEST IRELEVANT ===")
     print(assistant.assistant_response(
-        "What is the best recipe for tiramisu?"
+        "What do you know about Mikrotik?"
     ))
