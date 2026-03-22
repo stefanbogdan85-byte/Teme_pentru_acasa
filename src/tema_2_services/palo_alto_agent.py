@@ -24,8 +24,9 @@ USE_MODEL_URL = os.environ.get(
 
 WEB_URLS = [u for u in os.environ.get("WEB_URLS", "").split(";") if u]
 
+
 class RAGAssistant:
-    """Asistent cu RAG din surse web si un LLM pentru raspunsuri."""
+    """Asistent cu RAG din surse web si un LLM pentru raspunsuri despre Palo Alto Networks."""
 
     def __init__(self) -> None:
         """Initializeaza clientul LLM, embedderul si prompturile."""
@@ -35,21 +36,35 @@ class RAGAssistant:
 
         self.client = OpenAI(
             api_key=self.groq_api_key,
-            base_url=os.environ.get("GROQ_BASE_URL"))
+            base_url=os.environ.get("GROQ_BASE_URL"),
+        )
 
         os.makedirs(DATA_DIR, exist_ok=True)
         self.embedder = None
 
-        # ToDo: Adaugat o propozitie de referinta mai specifica pentru domeniul dvs
         self.relevance = self._embed_texts(
-            "Aceasta este o intrebare relevanta despre ...",
+            "How to configure Palo Alto Networks firewall security policy, "
+            "GlobalProtect VPN gateway, Cortex XDR endpoint protection, "
+            "PAN-OS threat prevention, zone-based access control, "
+            "application-ID and user-ID policy rules.",
         )[0]
 
-        # ToDo: Definiti un prompt de sistem mai detaliat pentru a ghida raspunsurile LLM-ului in directia dorita
         self.system_prompt = (
-            "..."
+            "You are a specialized technical assistant for Palo Alto Networks products. "
+            "Your expertise covers PAN-OS Next-Generation Firewalls (NGFW), "
+            "GlobalProtect VPN, and Cortex XDR endpoint detection and response. "
+            "\n\n"
+            "When answering questions:\n"
+            "- Provide precise, actionable technical guidance based on the context provided.\n"
+            "- Reference PAN-OS CLI commands, GUI paths, or API calls where applicable.\n"
+            "- For security policies, always mention zones, application-IDs, and security profiles.\n"
+            "- For GlobalProtect, address both gateway and portal configuration aspects.\n"
+            "- For Cortex XDR, distinguish between prevention, detection, and response capabilities.\n"
+            "- If the context does not contain enough information, say so clearly and suggest "
+            "checking docs.paloaltonetworks.com for the specific topic.\n"
+            "- Always respond in the same language the user is using (Romanian or English).\n"
+            "- Keep answers structured: use numbered steps for procedures, bullet points for options."
         )
-
 
     def _load_documents_from_web(self) -> list[str]:
         """Incarca si chunked documente de pe site-uri prin WebBaseLoader."""
@@ -79,22 +94,23 @@ class RAGAssistant:
 
         return all_chunks
 
-    def _send_prompt_to_llm(
-        self,
-        user_input: str,
-        context: str
-    ) -> str:
+    def _send_prompt_to_llm(self, user_input: str, context: str) -> str:
         """Trimite promptul catre LLM si returneaza raspunsul."""
-
         system_msg = self.system_prompt
 
-        # ToDo: Ajustati acest prompt pentru a se potrivi mai bine cu domeniul dvs si pentru a ghida LLM-ul sa ofere raspunsuri mai relevante si structurate.
         messages = [
             {"role": "system", "content": system_msg},
             {
                 "role": "user",
                 "content": (
-                    "..."
+                    f"Use the following technical documentation excerpts as context to answer "
+                    f"the question. Base your answer primarily on this context, and supplement "
+                    f"with your knowledge of Palo Alto Networks products where needed.\n\n"
+                    f"--- CONTEXT START ---\n{context}\n--- CONTEXT END ---\n\n"
+                    f"Question: {user_input}\n\n"
+                    f"Provide a clear, technically accurate answer. If describing a configuration "
+                    f"procedure, use numbered steps. Include relevant CLI commands or GUI paths "
+                    f"where applicable."
                 ),
             },
         ]
@@ -102,7 +118,7 @@ class RAGAssistant:
         try:
             response = self.client.chat.completions.create(
                 messages=messages,
-                model="openai/gpt-oss-20b",
+                model="llama-3.3-70b-versatile",
             )
             return response.choices[0].message.content
         except Exception:
@@ -110,7 +126,7 @@ class RAGAssistant:
                 "Asistent: Nu pot ajunge la modelul de limbaj acum. "
                 "Te rog incearca din nou in cateva momente."
             )
-        
+
     def _embed_texts(self, texts: str | list[str], batch_size: int = 32) -> np.ndarray:
         """Genereaza embeddings folosind Universal Sentence Encoder."""
         if isinstance(texts, str):
@@ -140,7 +156,7 @@ class RAGAssistant:
 
     def _cosine_similarity(self, a: np.ndarray, b: np.ndarray) -> float:
         """Calculeaza similaritatea cosine intre doi vectori."""
-        denom = (np.linalg.norm(a) * np.linalg.norm(b))
+        denom = np.linalg.norm(a) * np.linalg.norm(b)
         if denom == 0:
             return 0.0
         return float(np.dot(a, b) / denom)
@@ -183,7 +199,9 @@ class RAGAssistant:
         except OSError:
             return None
 
-    def _retrieve_relevant_chunks(self, chunks: list[str], user_query: str, k: int = 5) -> list[str]:
+    def _retrieve_relevant_chunks(
+        self, chunks: list[str], user_query: str, k: int = 5
+    ) -> list[str]:
         """Rankeaza chunks folosind FAISS si returneaza top-k relevante."""
         if not chunks:
             return []
@@ -215,26 +233,30 @@ class RAGAssistant:
         return [chunks[i] for i in indices[0] if i < len(chunks)]
 
     def calculate_similarity(self, text: str) -> float:
-        # ToDo: Ajustati aceasta propozitie de referinta pentru a se potrivi mai bine cu domeniul dvs, astfel incat sa reflecte mai precis ce inseamna "relevant" in contextul aplicatiei dvs.
-        """Returneaza similaritatea cu o propozitie de referinta despre ... ."""
+        """Returneaza similaritatea cu propozitia de referinta despre Palo Alto."""
         embedding = self._embed_texts(text.strip())[0]
         return self._cosine_similarity(embedding, self.relevance)
 
     def is_relevant(self, user_input: str) -> bool:
-        # ToDo: Ajustati pragul de similaritate pentru a se potrivi mai bine cu domeniul dvs, astfel incat sa echilibreze corect intre a permite intrebari relevante si a respinge cele irelevante.
-        """Verifica daca intrarea utilizatorului e despre ...."""
-        return self.calculate_similarity(user_input) >= 0.5
+        """Verifica daca intrarea utilizatorului e despre Palo Alto / securitate retea."""
+        return self.calculate_similarity(user_input) >= 0.45
 
     def assistant_response(self, user_message: str) -> str:
         """Directioneaza mesajul utilizatorului catre calea potrivita."""
         if not user_message:
-            # ToDo: Ajustati acest mesaj pentru a fi mai specific pentru domeniul dvs, astfel incat sa ghideze utilizatorii sa puna intrebari relevante si sa ofere un exemplu concret.
-            return "Te rog scrie un mesaj despre ... ."
+            return (
+                "Te rog scrie o intrebare despre Palo Alto Networks. "
+                "Exemple: 'Cum configurez o politica de securitate pe PAN-OS?', "
+                "'Care sunt pasii pentru a seta GlobalProtect Gateway?', "
+                "'Cum investighez un alert in Cortex XDR?'"
+            )
 
         if not self.is_relevant(user_message):
-            # ToDo: Ajustati acest mesaj pentru a fi mai specific pentru domeniul dvs, astfel incat sa ghideze utilizatorii sa puna intrebari relevante si sa ofere un exemplu concret.
             return (
-                "..."
+                "Intrebarea ta nu pare sa fie legata de Palo Alto Networks. "
+                "Sunt specializat in: PAN-OS / NGFW, GlobalProtect VPN si Cortex XDR. "
+                "Incearca o intrebare precum: 'Cum activez App-ID pe o regula de security policy?' "
+                "sau 'Ce este User-ID si cum il configurez?'"
             )
 
         chunks = self._load_documents_from_web()
@@ -242,8 +264,22 @@ class RAGAssistant:
         context = "\n\n".join(relevant_chunks)
         return self._send_prompt_to_llm(user_message, context)
 
+
 if __name__ == "__main__":
     assistant = RAGAssistant()
-    # ToDo: Testati cu intrebari relevante pentru domeniul dvs, precum si cu intrebari irelevante pentru a va asigura ca logica de filtrare functioneaza corect.
-    print(assistant.assistant_response("..."))  # test relevant
-    print(assistant.assistant_response("..."))  # test irelevant
+
+    # Test relevant - NGFW
+    print("=== TEST RELEVANT (NGFW) ===")
+    print(assistant.assistant_response(
+        "How do I configure a security policy rule on PAN-OS to allow HTTP traffic between zones?"
+    ))
+
+    print("\n=== TEST RELEVANT (GlobalProtect) ===")
+    print(assistant.assistant_response(
+        "What are the steps to configure a GlobalProtect Gateway?"
+    ))
+
+    print("\n=== TEST IRELEVANT ===")
+    print(assistant.assistant_response(
+        "What is the best recipe for tiramisu?"
+    ))
