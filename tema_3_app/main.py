@@ -5,12 +5,11 @@ import os
 import logging
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# reduce TensorFlow log noise in server output
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
 os.environ.setdefault("TF_ENABLE_ONEDNN_OPTS", "0")
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
 
-from src.services.fitness_assistant import FitnessAssistant
+from src.tema_2_services.palo_alto_agent import RAGAssistant
 
 from pydantic import BaseModel
 import asyncio
@@ -22,19 +21,16 @@ async def lifespan(app: FastAPI):
     load_dotenv()
     yield
 
-
 app = FastAPI(lifespan=lifespan)
-
 
 class ChatRequest(BaseModel):
     message: str
 
-assistant_response = FitnessAssistant()
+assistant_response = RAGAssistant()
 
 @app.get("/")
 def root():
-    return {"message": "Salutare! Fitness Assistant ruleaza."}
-
+    return {"message": "Hi! Palo Alto Networks Assistant is running."}
 
 @app.post("/chat/")
 async def chat(payload: ChatRequest):
@@ -43,10 +39,10 @@ async def chat(payload: ChatRequest):
             asyncio.to_thread(assistant_response.assistant_response, payload.message), timeout=45)
         return {"response": answer}
     except asyncio.TimeoutError:
-        raise HTTPException(status_code=504, detail="Raspunsul de chat a expirat")
+        raise HTTPException(status_code=504, detail="Chat response timed out")
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-    
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=80)
