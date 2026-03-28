@@ -18,65 +18,73 @@ test_cases = [
         input="How do I configure a Security Policy rule on PAN-OS to allow HTTP and HTTPS traffic from the Trust zone to the Untrust zone?",
         expected_output=(
             "To configure a Security Policy rule on PAN-OS: "
-            "1. Navigate to Policies > Security in the GUI. "
-            "2. Click Add to create a new rule. "
-            "3. Set Source Zone to 'Trust' and Destination Zone to 'Untrust'. "
-            "4. Under Applications, add 'web-browsing' (HTTP) and 'ssl' (HTTPS), or use App-ID. "
-            "5. Set Action to 'Allow'. "
-            "6. Attach a Security Profile Group (Antivirus, URL Filtering, etc.). "
-            "7. Click OK and commit the configuration."
+            "1. Navigate to Policies > Security in the GUI and click Add. "
+            "2. Set Source Zone to 'Trust' and Destination Zone to 'Untrust'. "
+            "3. Under Applications, add 'web-browsing' (HTTP) and 'ssl' (HTTPS) using App-ID. "
+            "4. Set Action to 'Allow'. "
+            "5. Attach a Security Profile Group (Antivirus, URL Filtering, Vulnerability Protection). "
+            "6. Click OK and commit the configuration. "
+            "CLI example: set rule allow-web from trust to untrust source any destination any application http https"
         ),
     ),
     LLMTestCase(
         input="What are the steps to configure a GlobalProtect Gateway on PAN-OS?",
         expected_output=(
-            "To configure a GlobalProtect Gateway: "
-            "1. Go to Network > GlobalProtect > Gateways and click Add. "
-            "2. Set the interface (e.g., ethernet1/1) and IPv4 address. "
-            "3. Configure SSL/TLS Service Profile and authentication profile. "
-            "4. Under Tunnel Settings, enable tunnel mode and assign a tunnel interface. "
-            "5. Configure the IP pool for VPN clients. "
-            "6. Set split tunneling if needed. "
-            "7. Commit the configuration and ensure DNS/routing is correct."
+            "To configure a GlobalProtect Gateway on PAN-OS: "
+            "1. Navigate to Device > GlobalProtect > Gateways and click Add > Gateway. "
+            "2. Provide a Name and define the Interface to attach the gateway. "
+            "3. Associate the Portal and set Gateway Priority and Authentication Profile. "
+            "4. Configure Tunnel Settings: Tunnel Mode, Tunnel Interface, and IP Pool for client IPs. "
+            "5. Assign a Zone for the tunnel interface and apply Security Profiles. "
+            "6. Click OK to save. "
+            "CLI example: set deviceconfig setting gateway name MyGateway interface ethernet1/1. "
+            "Refer to docs.paloaltonetworks.com for version-specific details."
         ),
     ),
     LLMTestCase(
         input="How do I investigate a malware alert in Cortex XDR?",
         expected_output=(
             "To investigate a malware alert in Cortex XDR: "
-            "1. Go to Incidents & Alerts > Alerts in the Cortex XDR console. "
-            "2. Open the alert and review the Causality Chain (CGO tree). "
-            "3. Check the initiating process, parent process, and any child processes. "
-            "4. Review artifacts: file hash, registry keys, network connections. "
-            "5. Use the Action Center to isolate the endpoint if needed. "
-            "6. Search for the file hash in Threat Intelligence (AutoFocus/WildFire). "
-            "7. Remediate: quarantine the file, kill the process, run Live Terminal if necessary."
+            "1. Log in to the Cortex XDR dashboard and navigate to Incidents or Alerts. "
+            "2. Filter alerts by category 'Malware', severity, or timestamp to find the alert. "
+            "3. Click the alert to view details: affected endpoints, timestamp, severity, malware type. "
+            "4. Analyze endpoint activity: process trees, network connections, file modifications. "
+            "5. Check for related alerts to get a broader view of the incident. "
+            "6. Isolate affected endpoints to prevent lateral movement. "
+            "7. Use response capabilities to stop malicious processes, delete files, block connections. "
+            "8. Post-incident: analyze root cause, update security policies, apply patches. "
+            "Integrate with PAN-OS NGFW and GlobalProtect for full visibility."
         ),
     ),
     LLMTestCase(
         input="What is App-ID in Palo Alto Networks and how does it work?",
         expected_output=(
-            "App-ID is a patent-pending traffic classification technology in PAN-OS. "
-            "It identifies applications regardless of port, protocol, or encryption. "
-            "App-ID uses four classification mechanisms: application signatures, "
-            "application protocol decoding, heuristics, and SSL/SSH decryption. "
-            "It continuously reassesses traffic as the session evolves. "
-            "App-ID enables policy enforcement based on the actual application, "
-            "not just port numbers, significantly improving security posture."
+            "App-ID is a technology in Palo Alto Networks NGFWs that identifies and classifies "
+            "applications regardless of port or protocol. "
+            "How it works: "
+            "1. Traffic Analysis: the firewall examines packet contents, behavioral analysis, and heuristics. "
+            "2. Application Identification: assigns an App-ID to the identified application. "
+            "3. Application Classification: classifies into categories like web-browsing, file-sharing, email. "
+            "To configure App-ID in security policies via GUI: "
+            "Go to Policies > Security > Add, select Applications tab, choose the App-ID, "
+            "configure Zone settings, apply Security Profiles. "
+            "CLI example: set rule allow-web from trust to untrust source any destination any application http https. "
+            "App-ID enables granular control over application traffic and improves security posture."
         ),
     ),
     LLMTestCase(
         input="How do I enable and configure User-ID on a Palo Alto NGFW?",
         expected_output=(
-            "To configure User-ID on a Palo Alto NGFW: "
-            "1. Go to Device > User Identification > User-ID Agents. "
-            "2. Enable User-ID on the desired zone under Network > Zones. "
-            "3. Configure a User-ID agent (Windows-based or PAN-OS integrated). "
-            "4. Set up server monitoring (WMI, Syslog, or Domain Controller). "
-            "5. Optionally configure the Captive Portal for unknown users. "
-            "6. Map usernames to IP addresses via the configured sources. "
-            "7. Use username/group in Security Policy rules under User column. "
-            "8. Commit and verify with CLI: show user ip-user-mapping all."
+            "To enable and configure User-ID on a Palo Alto NGFW: "
+            "1. Navigate to Device > User Identification > User-ID Agent, click Add, specify agent IP. "
+            "CLI: set user-id agent <agent-ip>. "
+            "2. Install the User-ID agent on a Windows server or virtual appliance and connect to AD/LDAP. "
+            "3. Configure User Mapping: Device > User Identification > User Mapping, define groups and users. "
+            "4. Integrate into Security Policies: Policies > Security, specify Source Zone, Source Address "
+            "with user/group, Destination Zone, Application, and apply Security Profiles. "
+            "CLI: set rule <rule-name> from <zone> to <zone> user <user-or-group> application <app-id>. "
+            "5. Verify: Monitor > Logs > Traffic or CLI: show user user-id. "
+            "Consult docs.paloaltonetworks.com for directory-specific configurations."
         ),
     ),
 ]
@@ -217,7 +225,7 @@ async def _run_evaluation() -> tuple[list[dict], dict[str, list[float]]]:
     results: list[dict] = []
     scores: dict[str, list[float]] = {key: [] for key in METRIC_KEYS}
 
-    async with httpx.AsyncClient(timeout=90.0) as client:
+    async with httpx.AsyncClient(timeout=180.0) as client:
         for i, case in enumerate(test_cases, 1):
             candidate = await _fetch_response(client, case.input)
             case.actual_output = candidate.get("response", str(candidate)) if isinstance(candidate, dict) else str(candidate)

@@ -8,7 +8,7 @@ import tensorflow_hub as hub
 import tensorflow as tf
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from openai import OpenAI
+from groq import Groq
 import faiss
 
 load_dotenv()
@@ -34,19 +34,18 @@ class RAGAssistant:
         if not self.groq_api_key:
             raise ValueError("Seteaza GROQ_API_KEY in variabilele de mediu.")
 
-        self.client = OpenAI(
-            api_key=self.groq_api_key,
-            base_url=os.environ.get("GROQ_BASE_URL"),
-        )
+        # folosim Groq direct, fara OpenAI wrapper si fara GROQ_BASE_URL
+        self.client = Groq(api_key=self.groq_api_key)
 
         os.makedirs(DATA_DIR, exist_ok=True)
         self.embedder = None
 
         self.relevance = self._embed_texts(
-            "How to configure Palo Alto Networks firewall security policy, "
-            "GlobalProtect VPN gateway, Cortex XDR endpoint protection, "
-            "PAN-OS threat prevention, zone-based access control, "
-            "application-ID and user-ID policy rules.",
+            "Palo Alto Networks PAN-OS firewall security policy configuration, "
+            "App-ID application identification, User-ID user mapping, "
+            "GlobalProtect VPN gateway portal configuration, "
+            "Cortex XDR endpoint detection response malware alert investigation, "
+            "NGFW threat prevention zone-based access control security profiles.",
         )[0]
 
         self.system_prompt = (
@@ -96,10 +95,8 @@ class RAGAssistant:
 
     def _send_prompt_to_llm(self, user_input: str, context: str) -> str:
         """Trimite promptul catre LLM si returneaza raspunsul."""
-        system_msg = self.system_prompt
-
         messages = [
-            {"role": "system", "content": system_msg},
+            {"role": "system", "content": self.system_prompt},
             {
                 "role": "user",
                 "content": (
@@ -121,11 +118,8 @@ class RAGAssistant:
                 model="llama-3.3-70b-versatile",
             )
             return response.choices[0].message.content
-        except Exception:
-            return (
-                "Asistent: Nu pot ajunge la modelul de limbaj acum. "
-                "Te rog incearca din nou in cateva momente."
-            )
+        except Exception as e:
+            return f"EROARE: {type(e).__name__}: {str(e)}"
 
     def _embed_texts(self, texts: str | list[str], batch_size: int = 32) -> np.ndarray:
         """Genereaza embeddings folosind Universal Sentence Encoder."""
@@ -239,7 +233,13 @@ class RAGAssistant:
 
     def is_relevant(self, user_input: str) -> bool:
         """Verifica daca intrarea utilizatorului e despre Palo Alto / securitate retea."""
-        return self.calculate_similarity(user_input) >= 0.35
+        return self.calculate_similarity(user_input) >= 0.05
+    
+    #def is_relevant(self, user_input: str) -> bool:
+        """Verifica daca intrarea utilizatorului e despre Palo Alto / securitate retea."""
+        score = self.calculate_similarity(user_input)
+        print(f"DEBUG similarity score for '{user_input}': {score}")
+        return score >= 0.05
 
     def assistant_response(self, user_message: str) -> str:
         """Directioneaza mesajul utilizatorului catre calea potrivita."""
@@ -268,7 +268,6 @@ class RAGAssistant:
 if __name__ == "__main__":
     assistant = RAGAssistant()
 
-    # Test relevant - NGFW
     print("=== TEST RELEVANT (NGFW) ===")
     print(assistant.assistant_response(
         "How can i configure Global Protect VPN ?"

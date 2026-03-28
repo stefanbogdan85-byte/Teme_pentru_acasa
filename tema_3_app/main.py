@@ -36,7 +36,7 @@ def root():
 async def chat(payload: ChatRequest):
     try:
         answer = await asyncio.wait_for(
-            asyncio.to_thread(assistant_response.assistant_response, payload.message), timeout=45)
+            asyncio.to_thread(assistant_response.assistant_response, payload.message), timeout=120)
         return {"response": answer}
     except asyncio.TimeoutError:
         raise HTTPException(status_code=504, detail="Chat response timed out")

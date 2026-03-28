@@ -5,7 +5,7 @@ from groq import Groq
 class GroqDeepEval(DeepEvalBaseLLM):
     def __init__(self, model: str = "llama-3.3-70b-versatile"):
         self.model = model
-        self.client = Groq()
+        self.client = Groq()  # foloseste GROQ_API_KEY din env automat, fara base_url
 
     def load_model(self):
         return self.client
@@ -22,3 +22,6 @@ class GroqDeepEval(DeepEvalBaseLLM):
 
     def get_model_name(self) -> str:
         return self.model
+
+
+
