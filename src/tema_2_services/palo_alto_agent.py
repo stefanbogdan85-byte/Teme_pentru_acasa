@@ -245,18 +245,18 @@ class RAGAssistant:
         """Directioneaza mesajul utilizatorului catre calea potrivita."""
         if not user_message:
             return (
-                "Te rog scrie o intrebare despre Palo Alto Networks. "
-                "Exemple: 'Cum configurez o politica de securitate pe PAN-OS?', "
-                "'Care sunt pasii pentru a seta GlobalProtect Gateway?', "
-                "'Cum investighez un alert in Cortex XDR?'"
+                "Please write a question about Palo Alto Networks. "
+                "Examples: 'How do I configure a security policy on PAN-OS?', "
+                "'What are the steps to set up a GlobalProtect Gateway?', "
+                "'How do I investigate an alert in Cortex XDR?'"
             )
 
         if not self.is_relevant(user_message):
             return (
-                "Intrebarea ta nu pare sa fie legata de Palo Alto Networks. "
-                "Sunt specializat in: PAN-OS / NGFW, GlobalProtect VPN si Cortex XDR. "
-                "Incearca o intrebare precum: 'Cum activez App-ID pe o regula de security policy?' "
-                "sau 'Ce este User-ID si cum il configurez?'"
+                "Your question does not seem to be related to Palo Alto Networks. "
+                "I specialize in: PAN-OS / NGFW, GlobalProtect VPN, and Cortex XDR. "
+                "Try a question like: 'How do I enable App-ID on a security policy rule?' "
+                "or 'What is User-ID and how do I configure it?'"
             )
 
         chunks = self._load_documents_from_web()
@@ -271,10 +271,10 @@ if __name__ == "__main__":
     # Test relevant - NGFW
     print("=== TEST RELEVANT (NGFW) ===")
     print(assistant.assistant_response(
-        "How do I configure a Palo Alto PA-440 firewall using Zero Touch Provisioning (ZTP)?"
+        "How can i configure Global Protect VPN ?"
     ))
 
     print("\n=== TEST IRELEVANT ===")
     print(assistant.assistant_response(
-        "What do you know about Mikrotik?"
+        "Give me a cake recipe"
     ))

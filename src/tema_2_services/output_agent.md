@@ -1,28 +1,40 @@
 === TEST RELEVANT (NGFW) ===
-To configure a Palo Alto PA-440 firewall using Zero Touch Provisioning (ZTP), follow these steps:
+Configuring GlobalProtect VPN involves setting up both the portal and the gateway. Here's a step-by-step guide to help you through the process:
 
-1. **Initial Setup**: Ensure the firewall is properly connected to a network with internet access. ZTP relies on the device being able to reach the Palo Alto Networks cloud services for initial configuration.
-2. **Power On and Initial Connection**: Power on the PA-440. Upon initial boot, if the device is properly connected to the internet, it will attempt to connect to the Palo Alto Networks cloud to retrieve its configuration.
-3. **Cloud Registration**: The device will register itself with the Palo Alto Networks cloud. This step requires an active support license and access to the internet.  
-4. **ZTP Profile Assignment**: In the Cortex Data Lake (or the legacy Panorama or firewall web interface for older setups), create or assign a ZTP profile to the device. This profile contains the initial configuration, including network settings, security policies, and other necessary configurations for the device to become operational.
-5. **Device Configuration Retrieval**: Once a ZTP profile is assigned to the device, the PA-440 will fetch this configuration from the cloud during its initial boot process or upon detecting the assignment of a new ZTP profile.
-6. **Apply Configuration**: After retrieving the configuration, the device will apply it. This may include setting up interfaces, zones, security policies (including application-IDs and security profiles), and any other configurations defined in the ZTP profile.
-7. **Validation and Testing**: Post-configuration, validate that the device is functioning as expected. This includes checking network connectivity, testing security policies, and verifying that the device can properly forward traffic.
+### Configuring GlobalProtect Portal
 
-**CLI Command for Verification**:
-To verify the ZTP configuration has been applied successfully via the CLI, use the following command:
-```
-show config
-```
-This command displays the current configuration of the device, allowing you to verify that the settings from the ZTP profile have been applied correctly.
+1. **Access the Web Interface**: Log in to the Palo Alto Networks firewall web interface at `https://<firewall_IP>` (replace `<firewall_IP>` with the IP address of your firewall).
+2. **Navigate to GlobalProtect**: Go to `Device` > `GlobalProtect` > `Portals`.
+3. **Create a New Portal**: Click `Add` and enter a name for your portal. Configure the following settings:
+   - **Interface**: Select the interface where the portal will be hosted.
+   - **SSL/TLS Service Profile**: Choose or create an SSL/TLS service profile for encrypted communication.
+   - ** Authentication Profile**: Select an authentication profile that defines how users will be authenticated.
+4. **Commit Changes**: Click `OK` to save your portal configuration.
 
-**GUI Path for ZTP Profile Management**:
-For managing ZTP profiles in the Cortex Data Lake or through a Panorama:
-- Navigate to **Device Management** > **Zero Touch Provisioning**.
-- Here, you can create, edit, or assign ZTP profiles to devices.
+### Configuring GlobalProtect Gateway
 
-**Important Note**:
-Without specific technical documentation excerpts provided in the context, the steps outlined above are based on general knowledge of Palo Alto Networks products and Zero Touch Provisioning capabilities. For detailed, version-specific instructions or configurations, it's recommended to consult the official Palo Alto Networks documentation at [docs.paloaltonetworks.com](https://docs.paloaltonetworks.com).
+1. **Navigate to Gateways**: Go to `Device` > `GlobalProtect` > `Gateways`.
+2. **Create a New Gateway**: Click `Add` and enter a name for your gateway. Configure the following:
+   - **Interface**: Choose the interface where the gateway will be hosted.
+   - **SSL/TLS Service Profile**: Same as for the portal, for encrypted communication.
+   - **Authentication Profile**: Select an authentication profile that matches the one used in the portal.
+   - **Portal Configuration**: Associate the gateway with the previously configured portal.
+3. **Tunnel Settings**: Configure the tunnel settings, including the IP pool for VPN clients, and Split Tunnel settings if necessary.
+4. **Commit Changes**: Click `OK` to save your gateway configuration.
+
+### CLI Commands for Reference
+
+To configure the GlobalProtect portal and gateway using the CLI, you can use commands like the following:
+- To create a portal: `set deviceconfig global-protect portal <portal_name> interface <interface_name>`
+- To create a gateway: `set deviceconfig global-protect gateway <gateway_name> interface <interface_name>`
+
+### Additional Considerations
+
+- Ensure you have the correct licenses for GlobalProtect on your Palo Alto Networks firewall.
+- Configure any necessary security policies to allow traffic from the GlobalProtect tunnel zones.
+- Test your GlobalProtect configuration to ensure that it's working as expected.
+
+For detailed and up-to-date configuration steps, it's recommended to consult the official Palo Alto Networks documentation at [docs.paloaltonetworks.com](https://docs.paloaltonetworks.com).
 
 === TEST IRELEVANT ===
-Intrebarea ta nu pare sa fie legata de Palo Alto Networks. Sunt specializat in: PAN-OS / NGFW, GlobalProtect VPN si Cortex XDR. Incearca o intrebare precum: 'Cum activez App-ID pe o regula de security policy?' sau 'Ce este User-ID si cum il configurez?'
+Your question does not seem to be related to Palo Alto Networks. I specialize in: PAN-OS / NGFW, GlobalProtect VPN, and Cortex XDR. Try a question like: 'How do I enable App-ID on a security policy rule?' or 'What is User-ID and how do I configure it?'
