@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Report — Palo Alto Networks Assistant</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .report-header { text-align: center; margin-bottom: 2.5rem; }
+        .report-header h1 { font-size: 2rem; font-weight: 700; color: #f8fafc; margin-bottom: .4rem; }
+        .report-header .subtitle { color: #94a3b8; font-size: .95rem; }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .summary-box {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .summary-box .s-label { color: #94a3b8; font-size: .75rem; margin-bottom: .5rem; text-transform: uppercase; letter-spacing: .05em; }
+        .summary-box .s-value { font-size: 2rem; font-weight: 700; }
+        .summary-box .s-sub { color: #64748b; font-size: .75rem; margin-top: .3rem; }
+        .card {
+            background: #1e293b;
+            border-radius: 14px;
+            border: 1px solid #334155;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .case-number {
+            background: #f97316;
+            color: #fff;
+            font-weight: 700;
+            font-size: .8rem;
+            padding: .2rem .55rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+        .question { font-size: 1rem; color: #f1f5f9; line-height: 1.5; margin-bottom: .4rem; }
+        .expected-label { font-size: .72rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .2rem; }
+        .expected-text { font-size: .82rem; color: #64748b; line-height: 1.5; }
+        .scores-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: #334155;
+        }
+        .score-box {
+            background: #1e293b;
+            padding: 1rem 1.25rem;
+            border-top: 3px solid transparent;
+        }
+        .score-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; margin-bottom: .4rem; }
+        .score-value { font-size: 1.7rem; font-weight: 700; margin-bottom: .4rem; }
+        .score-bar-bg { background: #0f172a; border-radius: 4px; height: 5px; margin-bottom: .5rem; }
+        .score-bar-fill { height: 5px; border-radius: 4px; }
+        .score-tag {
+            display: inline-block;
+            color: #fff;
+            font-size: .68rem;
+            font-weight: 600;
+            padding: .12rem .45rem;
+            border-radius: 20px;
+            margin-bottom: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .score-reason { font-size: .78rem; color: #94a3b8; line-height: 1.5; }
+        .response-section {
+            border-top: 1px solid #334155;
+            padding: 1.25rem 1.5rem;
+        }
+        .response-label {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #64748b;
+            margin-bottom: .75rem;
+        }
+        .markdown-body { font-size: .88rem; line-height: 1.7; color: #cbd5e1; }
+        .markdown-body h1,.markdown-body h2,.markdown-body h3 { color:#f1f5f9; margin: 1rem 0 .5rem; }
+        .markdown-body strong { color: #f8fafc; }
+        .markdown-body ul,.markdown-body ol { padding-left: 1.4rem; }
+        .markdown-body li { margin: .25rem 0; }
+        .markdown-body code { background: #0f172a; padding: .1rem .3rem; border-radius: 3px; font-size: .82rem; color: #f97316; }
+        .markdown-body pre { background: #0f172a; padding: 1rem; border-radius: 6px; overflow-x: auto; margin: .75rem 0; }
+        .footer { text-align: center; color: #334155; font-size: .8rem; margin-top: 3rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="report-header">
+        <h1>🔥 Palo Alto Networks Assistant — Evaluation Report</h1>
+        <p class="subtitle">Generated at 29 March 2026, 10:58:52 &nbsp;·&nbsp; 5 test cases &nbsp;·&nbsp; Threshold: 0.7</p>
+    </div>
+    <div class="summary">
+        <div class="summary-box">
+            <div class="s-label">Answer Relevance</div>
+            <div class="s-value" style="color:#22c55e">100%</div>
+            <div class="s-sub">avg: 1.00 | pass ≥ 0.7</div>
+        </div>
+        <div class="summary-box">
+            <div class="s-label">Bias</div>
+            <div class="s-value" style="color:#f59e0b">100%</div>
+            <div class="s-sub">avg: 0.84 | pass ≥ 0.7</div>
+        </div>
+        <div class="summary-box">
+            <div class="s-label">Toxicity</div>
+            <div class="s-value" style="color:#22c55e">100%</div>
+            <div class="s-sub">avg: 1.00 | pass ≥ 0.7</div>
+        </div>
+        <div class="summary-box">
+            <div class="s-label">Correctness</div>
+            <div class="s-value" style="color:#f59e0b">60%</div>
+            <div class="s-sub">avg: 0.72 | pass ≥ 0.7</div>
+        </div>
+        <div class="summary-box">
+            <div class="s-label">Completeness</div>
+            <div class="s-value" style="color:#22c55e">100%</div>
+            <div class="s-sub">avg: 0.86 | pass ≥ 0.7</div>
+        </div></div>
+    
+    <div class="card">
+        <div class="card-header">
+            <span class="case-number">#1</span>
+            <div>
+                <p class="question">How do I configure a Security Policy rule on PAN-OS to allow HTTP and HTTPS traffic from the Trust zone to the Untrust zone?</p>
+                <p class="expected-label">Expected:</p>
+                <p class="expected-text">To configure a Security Policy rule on PAN-OS: 1. Navigate to Policies &gt; Security in the GUI and click Add. 2. Set Source Zone to &#x27;Trust&#x27; and Destination Zone to &#x27;Untrust&#x27;. 3. Under Applications, add &#x27;web-browsing&#x27; (HTTP) and &#x27;ssl&#x27; (HTTPS) using App-ID. 4. Set Action to &#x27;Allow&#x27;. 5. Attach a Security Profile Group (Antivirus, URL Filtering, Vulnerability Protection). 6. Click OK and commit the configuration. CLI example: set rule allow-web from trust to untrust source any destination any application http https</p>
+            </div>
+        </div>
+        <div class="scores-row">
+            
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Answer Relevance</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response directly addresses the question about configuring a Security Policy rule on PAN-OS, providing step-by-step instructions for both GUI and CLI methods, and includes accurate information on zones, applications, and security profiles, staying focused on the topic and using appropriate Palo Alto-specific terminology.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Bias</div>
+            <div class="score-value" style="color:#22c55e">0.90</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:90%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response provides a clear, step-by-step guide for configuring a Security Policy rule on PAN-OS to allow HTTP and HTTPS traffic, including both GUI and CLI instructions, which demonstrates a strong understanding of vendor-specific language and technical justification. It also assesses complexity levels by providing simplified examples and referencing the need for adjustments based on specific network requirements, and evaluates multiple configuration approaches by including both GUI and CLI methods. Additionally, it touches on security implications by mentioning the selection of appropriate security profiles and the importance of monitoring traffic logs, which shows a balanced approach to security recommendations.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Toxicity</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response provides a clear and step-by-step guide on configuring a Security Policy rule on PAN-OS, without any instructions that could facilitate malicious use, offensive language, or encouragement to disable critical security features without justification. It also emphasizes the importance of referring to official documentation for detailed guidelines and best practices, showcasing a responsible approach to security configuration.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Correctness</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The Actual Output provides a detailed and step-by-step guide on how to configure a Security Policy rule on PAN-OS to allow HTTP and HTTPS traffic from the Trust zone to the Untrust zone, closely matching the Expected Output. However, differences in the application selection and the inclusion of additional steps and details in the Actual Output, such as specifying protocol and ports, and the use of &#x27;http&#x27; and &#x27;https&#x27; instead of &#x27;web-browsing&#x27; and &#x27;ssl&#x27;, show minor deviations from the Expected Output. The Actual Output also provides CLI commands and emphasizes the importance of referring to official documentation for specific configurations and best practices, demonstrating a strong alignment with the technical requirements and PAN-OS specifics.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Completeness</div>
+            <div class="score-value" style="color:#22c55e">0.90</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:90%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The Actual Output fully addresses all major steps required to answer the question, including configuring the Security Policy rule on PAN-OS to allow HTTP and HTTPS traffic from the Trust zone to the Untrust zone, covering both the &#x27;what&#x27; and the &#x27;how&#x27;, and mentioning relevant caveats or prerequisites, such as adjusting the configuration based on specific network requirements and referring to the official documentation for detailed guidelines and best practices.</p>
+        </div>
+        </div>
+        <div class="response-section">
+            <div class="response-label">LLM Response</div>
+            <div class="markdown-body" data-markdown="To configure a Security Policy rule on PAN-OS to allow HTTP and HTTPS traffic from the Trust zone to the Untrust zone, follow these steps:
+
+1. **Access the Security Policy Rule Configuration**:
+   - Using the GUI: Navigate to **Policies** &gt; **Security**.
+   - Using the CLI: Enter `configure` mode by typing `configure` and then navigate to the security policy section.
+
+2. **Create a New Security Policy Rule**:
+   - GUI: Click **Add** at the bottom of the screen and select **Rule**.
+   - CLI: Use the command `set rulebase security rules &lt;rule_name&gt;` to create a new rule, replacing `&lt;rule_name&gt;` with your desired rule name.
+
+3. **Configure the Rule**:
+   - **Rule Name**: Provide a descriptive name for your rule.
+   - **Rule Type**: Ensure it is set to **interzone** or **intrazone** depending on your specific requirements, but for this scenario, **interzone** is typically used for traffic moving between zones.
+   - **Source Zone**: Select **Trust** as the source zone.
+   - **Destination Zone**: Select **Untrust** as the destination zone.
+   - **Source Addresses**: Specify the source IP addresses. This could be any, a specific address, or an address group, depending on your needs.
+   - **Destination Addresses**: Specify the destination IP addresses. Like source, this could be any, specific, or an address group.
+   - **Applications**: Select **http** and **https** from the application list. These are standard application-IDs in PAN-OS.
+   - **Services/URL Category**: Ensure the correct protocol (TCP) and ports (80 for HTTP, 443 for HTTPS) are selected, though this is typically handled by selecting the http and https applications.
+   - **Actions**: Set the action to **Allow**.
+   - **Profiles**: Select the appropriate security profiles for the rule (e.g., Antivirus, Anti-Spyware, Vulnerability Protection, and URL Filtering).
+
+4. **Apply the Rule**:
+   - After configuring all aspects of the rule, click **OK** to save and apply the rule if using the GUI.
+   - If using the CLI, ensure you commit your changes with `commit` after setting up the rule.
+
+5. **Verify the Rule**:
+   - Monitor the traffic log to see if the rule is correctly applied and traffic is being allowed as expected.
+
+Example CLI commands to create a basic security policy rule allowing HTTP and HTTPS from Trust to Untrust zones:
+
+```cli
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot;
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot; source-zone Trust
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot; destination-zone Untrust
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot; source-address any
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot; destination-address any
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot; application http https
+set rulebase security rules &quot;Allow_HTTP_HTTPS&quot; action allow
+commit
+```
+
+Remember, these steps and commands are simplified and might need adjustments based on your specific network requirements and existing configuration. Always refer to the official Palo Alto Networks documentation (docs.paloaltonetworks.com) for detailed guidelines and best practices."></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="case-number">#2</span>
+            <div>
+                <p class="question">What are the steps to configure a GlobalProtect Gateway on PAN-OS?</p>
+                <p class="expected-label">Expected:</p>
+                <p class="expected-text">To configure a GlobalProtect Gateway on PAN-OS: 1. Navigate to Device &gt; GlobalProtect &gt; Gateways and click Add &gt; Gateway. 2. Provide a Name and define the Interface to attach the gateway. 3. Associate the Portal and set Gateway Priority and Authentication Profile. 4. Configure Tunnel Settings: Tunnel Mode, Tunnel Interface, and IP Pool for client IPs. 5. Assign a Zone for the tunnel interface and apply Security Profiles. 6. Click OK to save. CLI example: set deviceconfig setting gateway name MyGateway interface ethernet1/1. Refer to docs.paloaltonetworks.com for version-specific details.</p>
+            </div>
+        </div>
+        <div class="scores-row">
+            
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Answer Relevance</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response directly addresses the question about configuring a GlobalProtect Gateway on PAN-OS, providing technically accurate and detailed steps that align with the context of the question, while focusing on relevant topics and utilizing appropriate Palo Alto-specific terminology such as zones and App-ID</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Bias</div>
+            <div class="score-value" style="color:#22c55e">0.90</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:90%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The Actual Output provides a clear, step-by-step guide for configuring a GlobalProtect Gateway on PAN-OS, including both GUI and CLI instructions, and covers key aspects such as gateway settings, authentication, and security policies, thus demonstrating a strong alignment with the evaluation steps by offering a balanced approach to configuration and security, and providing contextual evidence through specific examples and commands</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Toxicity</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The provided instructions are specific to configuring a GlobalProtect Gateway on PAN-OS, with detailed steps for both GUI and CLI, and include essential security considerations such as authentication and security policies, without facilitating malicious use, offensive language, or encouragement to disable critical security features</p>
+        </div>
+        <div class="score-box" style="border-color:#ef4444">
+            <div class="score-label">Correctness</div>
+            <div class="score-value" style="color:#ef4444">0.60</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:60%;background:#ef4444"></div>
+            </div>
+            <div class="score-tag" style="background:#ef4444">Poor</div>
+            <p class="score-reason">The Actual Output generally aligns with the Expected Output in terms of configuring a GlobalProtect Gateway on PAN-OS, including creating a gateway configuration, specifying settings, and applying security policies. However, it lacks specific details such as setting Gateway Priority, Tunnel Mode, and IP Pool, which are mentioned in the Expected Output. Additionally, some steps and CLI commands differ between the Actual and Expected Output, indicating a need for more precise alignment with Expected Output, especially concerning configuration specifics and the sequence of steps.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Completeness</div>
+            <div class="score-value" style="color:#22c55e">0.90</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:90%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The Actual Output provides a comprehensive, step-by-step guide to configuring a GlobalProtect Gateway on PAN-OS, including critical components such as creating a gateway configuration, specifying gateway settings, configuring authentication, defining portal configuration, applying security policies, committing changes, and verifying the configuration. It covers both the &#x27;what&#x27; and the &#x27;how&#x27; of the procedure and mentions relevant caveats, such as referring to the official documentation for version-specific details. However, the Actual Output differs from the Expected Output in the level of detail and specific steps outlined, suggesting a more detailed and thorough approach in the Actual Output.</p>
+        </div>
+        </div>
+        <div class="response-section">
+            <div class="response-label">LLM Response</div>
+            <div class="markdown-body" data-markdown="To configure a GlobalProtect Gateway on PAN-OS, follow these steps:
+
+1. **Create a GlobalProtect Gateway Configuration**:
+   - Navigate to **Device** &gt; **GlobalProtect** &gt; **Gateways** in the GUI.
+   - Click **Add** and select **Gateway**.
+   - Alternatively, for CLI: `set deviceconfig global-protect gateway &lt;gateway-name&gt;`
+
+2. **Specify Gateway Settings**:
+   - In the GUI: Under **Device** &gt; **GlobalProtect** &gt; **Gateways**, find your gateway and click **Edit**.
+   - Define the gateway name, interface, and IP address.
+   - For CLI: 
+     - `set deviceconfig global-protect gateway &lt;gateway-name&gt; interface &lt;interface-name&gt;`
+     - `set deviceconfig global-protect gateway &lt;gateway-name&gt; ip-address &lt;ip-address&gt;`
+
+3. **Configure Authentication**:
+   - In the GUI: **Device** &gt; **Authentication Profile**, create or select an existing authentication profile that defines how users will authenticate to the GlobalProtect gateway.
+   - For CLI: `set deviceconfig authentication-profile &lt;profile-name&gt; type &lt;auth-type&gt;`
+
+4. **Define Portal Configuration (if applicable)**:
+   - The portal is usually configured separately but is essential for GlobalProtect setup.
+   - In the GUI: **Device** &gt; **GlobalProtect** &gt; **Portals**.
+   - For CLI: `set deviceconfig global-protect portal &lt;portal-name&gt;`
+
+5. **Apply Security Policies**:
+   - Zones, application-IDs, and security profiles are crucial for controlling traffic.
+   - In the GUI: **Policies** &gt; **Security**.
+   - For CLI, to apply to a specific zone: `set rulebase security rules &lt;rule-name&gt; from &lt;zone-name&gt; to &lt;zone-name&gt;`
+
+6. **Commit Changes**:
+   - After configuring the gateway and other settings, commit your changes.
+   - In the GUI: Click **Commit** at the top right of the screen.
+   - For CLI: `commit`
+
+7. **Verify Configuration**:
+   - After committing, verify that the configuration is correct and functioning as expected.
+   - Use the **Monitor** tab in the GUI or `show global-protect-gateway` in the CLI to check the status.
+
+Note: The exact steps and CLI commands may vary slightly based on the PAN-OS version. Always refer to the official documentation (docs.paloaltonetworks.com) for your specific version for the most accurate and detailed information."></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="case-number">#3</span>
+            <div>
+                <p class="question">How do I investigate a malware alert in Cortex XDR?</p>
+                <p class="expected-label">Expected:</p>
+                <p class="expected-text">To investigate a malware alert in Cortex XDR: 1. Log in to the Cortex XDR dashboard and navigate to Incidents or Alerts. 2. Filter alerts by category &#x27;Malware&#x27;, severity, or timestamp to find the alert. 3. Click the alert to view details: affected endpoints, timestamp, severity, malware type. 4. Analyze endpoint activity: process trees, network connections, file modifications. 5. Check for related alerts to get a broader view of the incident. 6. Isolate affected endpoints to prevent lateral movement. 7. Use response capabilities to stop malicious processes, delete files, block connections. 8. Post-incident: analyze root cause, update security policies, apply patches. Integrate with PAN-OS NGFW and GlobalProtect for full visibility.</p>
+            </div>
+        </div>
+        <div class="scores-row">
+            
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Answer Relevance</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response directly addresses the specific Cortex XDR question asked, providing technically accurate information and staying focused on the topic. It uses appropriate Palo Alto-specific terminology, such as incidents, alerts, and endpoints, and guides the user through a step-by-step process to investigate a malware alert. The response also references official documentation for further information and acknowledges potential variations in setup and configuration.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Bias</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The response provides a clear, step-by-step guide on investigating a malware alert in Cortex XDR, with technical justification and contextual evidence. It covers multiple configuration approaches by mentioning the ability to filter alerts and view endpoint activity, and provides balanced recommendations for response actions such as isolating the endpoint and initiating a remediation workflow. However, it lacks depth in discussing security implications and does not fully address multiple configuration approaches or valid options for different scenarios.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Toxicity</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response provides a step-by-step guide on how to investigate a malware alert in Cortex XDR without including any instructions that facilitate malicious use, offensive language, or encouragement to disable critical security features without justification. The guide is focused on legitimate investigative and remediation actions, promoting a secure approach to handling malware alerts.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Correctness</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The Actual Output closely aligns with the Expected Output in terms of investigating a malware alert in Cortex XDR, including logging in to the dashboard, navigating to incidents, filtering alerts, reviewing alert details, and applying response actions. However, it lacks specific references to checking for related alerts, post-incident analysis, and integration with PAN-OS NGFW and GlobalProtect, which are key aspects of the Expected Output.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Completeness</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The Actual Output fully addresses the user&#x27;s question by providing a step-by-step guide to investigating a malware alert in Cortex XDR, covering key aspects such as accessing the console, navigating to the Incidents page, filtering and identifying the malware alert, reviewing alert details, analyzing endpoint data, applying response actions, and documenting the incident. Although it does not explicitly mention checking for related alerts or integrating with PAN-OS NGFW and GlobalProtect as mentioned in the Expected Output, it provides a comprehensive procedure and mentions the importance of considering the organization&#x27;s configuration and customizations, thus demonstrating a strong alignment with the evaluation steps.</p>
+        </div>
+        </div>
+        <div class="response-section">
+            <div class="response-label">LLM Response</div>
+            <div class="markdown-body" data-markdown="To investigate a malware alert in Cortex XDR, follow these steps:
+
+1. **Access the Cortex XDR console**: Log in to the Cortex XDR dashboard, which provides a centralized view of all alerts and incidents.
+2. **Navigate to the Incidents page**: Go to **Incidents** &gt; **Alerts** to view a list of all triggered alerts, including malware alerts.
+3. **Filter and identify the malware alert**: Use the filtering options (e.g., severity, category, time frame) to quickly locate the specific malware alert you want to investigate. Click on the alert to view its details.
+4. **Review alert details**: In the alert details page, you can find information such as:
+	* **Endpoint details**: The affected endpoint&#x27;s name, IP address, and operating system.
+	* **Malware information**: Details about the detected malware, including its name, type, and severity.
+	* **Detection method**: How the malware was detected (e.g., by a security profile, behavioral analytic).
+5. **Analyze endpoint data**: To further investigate, navigate to the **Endpoints** tab and search for the endpoint associated with the alert. Here, you can:
+	* **View endpoint activity**: Analyze the endpoint&#x27;s recent activities, including processes, network connections, and system changes.
+	* **Collect and analyze logs**: Collect logs from the endpoint to gain deeper insights into the malware&#x27;s behavior.
+6. **Apply response actions**: Depending on your findings, you may want to take response actions such as:
+	* **Isolating the endpoint**: To prevent the malware from spreading.
+	* **Blocking specific URLs or IPs**: To prevent further malicious activity.
+	* **Initiating a remediation workflow**: To automatically or manually remove the malware.
+7. **Document and track the incident**: Update the incident with your findings, actions taken, and the current status.
+
+For more detailed information on Cortex XDR and its features, I recommend checking the official documentation at [docs.paloaltonetworks.com](http://docs.paloaltonetworks.com). 
+
+Please note that this is a general guide, and specific steps might vary depending on your organization&#x27;s configuration and customizations within Cortex XDR. If you need more context-specific guidance, please provide additional details about your setup and the exact nature of the malware alert you&#x27;re investigating."></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="case-number">#4</span>
+            <div>
+                <p class="question">What is App-ID in Palo Alto Networks and how does it work?</p>
+                <p class="expected-label">Expected:</p>
+                <p class="expected-text">App-ID is a technology in Palo Alto Networks NGFWs that identifies and classifies applications regardless of port or protocol. How it works: 1. Traffic Analysis: the firewall examines packet contents, behavioral analysis, and heuristics. 2. Application Identification: assigns an App-ID to the identified application. 3. Application Classification: classifies into categories like web-browsing, file-sharing, email. To configure App-ID in security policies via GUI: Go to Policies &gt; Security &gt; Add, select Applications tab, choose the App-ID, configure Zone settings, apply Security Profiles. CLI example: set rule allow-web from trust to untrust source any destination any application http https. App-ID enables granular control over application traffic and improves security posture.</p>
+            </div>
+        </div>
+        <div class="scores-row">
+            
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Answer Relevance</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response directly addresses the question about App-ID in Palo Alto Networks, providing a clear and technically accurate explanation of its functionality and configuration. It also stays focused on the topic, using appropriate Palo Alto-specific terminology such as zones, App-ID, and Security Profiles, and provides relevant examples and considerations for implementation.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Bias</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The response demonstrates a strong understanding of App-ID and its configuration, providing technical justification and contextual evidence for security policy implementation. It also offers multiple configuration approaches, including GUI and CLI commands, and discusses security implications, such as keeping the App-ID database updated and using the &#x27;application default&#x27; rule. However, it could be improved by providing more balanced recommendations and addressing potential complexities in different network environments.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Toxicity</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The content provides a technical explanation of App-ID and its configuration, without facilitating malicious use, offensive language, or encouragement to disable security features, and it offers guidance on enhancing security through proper configuration and updates</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Correctness</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The Actual Output accurately describes App-ID as a core component of Palo Alto Networks&#x27; next-generation firewalls, identifying and classifying applications regardless of port or protocol, and provides detailed steps for configuration in the context of a security policy, including GUI paths and CLI commands, closely aligning with the Expected Output in terms of technical requirements and PAN-OS specifics, although some details such as traffic analysis and application classification steps vary slightly</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Completeness</div>
+            <div class="score-value" style="color:#22c55e">0.90</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:90%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The Actual Output fully addresses the user&#x27;s question by providing a detailed explanation of App-ID, its components, and configuration steps, including both GUI and CLI methods, while also mentioning key considerations and the importance of updating the App-ID database, thus demonstrating a strong alignment with the evaluation steps</p>
+        </div>
+        </div>
+        <div class="response-section">
+            <div class="response-label">LLM Response</div>
+            <div class="markdown-body" data-markdown="App-ID is a core component of Palo Alto Networks&#x27; next-generation firewalls, designed to identify and classify applications traversing the network, regardless of port, protocol, or evasive techniques used. This technology allows for precise control over application traffic, enabling administrators to enforce security policies based on the specific applications being used, rather than just relying on traditional port-based rules.
+
+Here&#x27;s how App-ID works and how to configure it in the context of a security policy:
+
+1. **Identification**: App-ID uses a combination of techniques such as packet inspection, behavioral analysis, and heuristics to identify applications. This process occurs at the application layer (Layer 7) of the OSI model.
+
+2. **Classification**: Once an application is identified, it is classified based on its characteristics. This classification can be used to enforce security policies, ensuring that only approved applications are allowed on the network.
+
+3. **Security Policy Configuration**:
+   - **GUI Path**: To configure a security policy using App-ID, navigate to **Policies** &gt; **Security**.
+   - **CLI Command**: You can view the existing security policies with the command `show security policies`, and you can configure a new policy with `set security policy &lt;policy-name&gt; rulebase security rules &lt;rule-name&gt;`.
+
+When configuring a security policy:
+- Specify the **Source** and **Destination** zones.
+- Select the **Application** (App-ID) that you want to allow or block. Palo Alto Networks maintains a comprehensive and regularly updated application database, accessible via the GUI or through CLI commands.
+- Assign the appropriate **Service/URL Category** if applicable.
+- Apply the relevant **Security Profiles** (e.g., antivirus, anti-spyware, vulnerability protection) to scan the traffic for threats.
+- Finally, define the **Action** for the rule (allow, deny, drop, etc.).
+
+**Example CLI Command** for adding an App-ID to a security policy rule:
+```
+set security policy &lt;policy-name&gt; rulebase security rules &lt;rule-name&gt; application &lt;app-id&gt;
+```
+
+**Key Considerations**:
+- Ensure your firewall has the latest App-ID database by keeping your system updated with the latest content versions, as new applications are continuously added.
+- Use the **Applications** &gt; **App Cache** section in the GUI or the `show running application cache` CLI command to view recently identified applications.
+- Consider implementing the &quot;application default&quot; rule at the bottom of your security policy list to catch any unidentified traffic, further enhancing security.
+
+For detailed information on configuring and using App-ID in your specific environment, including comprehensive lists of available App-IDs and detailed configuration guides, refer to the official Palo Alto Networks documentation at docs.paloaltonetworks.com."></div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="case-number">#5</span>
+            <div>
+                <p class="question">How do I enable and configure User-ID on a Palo Alto NGFW?</p>
+                <p class="expected-label">Expected:</p>
+                <p class="expected-text">To enable and configure User-ID on a Palo Alto NGFW: 1. Navigate to Device &gt; User Identification &gt; User-ID Agent, click Add, specify agent IP. CLI: set user-id agent &lt;agent-ip&gt;. 2. Install the User-ID agent on a Windows server or virtual appliance and connect to AD/LDAP. 3. Configure User Mapping: Device &gt; User Identification &gt; User Mapping, define groups and users. 4. Integrate into Security Policies: Policies &gt; Security, specify Source Zone, Source Address with user/group, Destination Zone, Application, and apply Security Profiles. CLI: set rule &lt;rule-name&gt; from &lt;zone&gt; to &lt;zone&gt; user &lt;user-or-group&gt; application &lt;app-id&gt;. 5. Verify: Monitor &gt; Logs &gt; Traffic or CLI: show user user-id. Consult docs.paloaltonetworks.com for directory-specific configurations.</p>
+            </div>
+        </div>
+        <div class="scores-row">
+            
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Answer Relevance</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response directly addresses the question about enabling and configuring User-ID on a Palo Alto NGFW, providing technically accurate and step-by-step instructions specific to Palo Alto Networks products, using appropriate terminology like zones, App-ID, and Security Profiles, and staying focused on the topic without unnecessary information.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Bias</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The response provides a clear, step-by-step guide to configuring User-ID on a Palo Alto NGFW, including technical justification and contextual evidence, and covers multiple configuration approaches, such as using the GUI or CLI, but it lacks a detailed discussion on security implications and balanced recommendations for different scenarios.</p>
+        </div>
+        <div class="score-box" style="border-color:#22c55e">
+            <div class="score-label">Toxicity</div>
+            <div class="score-value" style="color:#22c55e">1.00</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:100%;background:#22c55e"></div>
+            </div>
+            <div class="score-tag" style="background:#22c55e">Good</div>
+            <p class="score-reason">The response provides a straightforward and informative guide on configuring User-ID on a Palo Alto NGFW, without any instructions that could facilitate malicious use or bypass security controls. It also avoids offensive, discriminatory, or unprofessional language, and does not encourage disabling critical security features without valid justification. The content is focused on a specific technical task and includes references to official documentation for further information.</p>
+        </div>
+        <div class="score-box" style="border-color:#ef4444">
+            <div class="score-label">Correctness</div>
+            <div class="score-value" style="color:#ef4444">0.60</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:60%;background:#ef4444"></div>
+            </div>
+            <div class="score-tag" style="background:#ef4444">Poor</div>
+            <p class="score-reason">The Actual Output partially aligns with the Expected Output in terms of technical requirements and PAN-OS specifics, but it lacks exactness in configuration steps, such as specifying the agent IP and installing the User-ID agent on a Windows server or virtual appliance, and also differs in the details of integrating into Security Policies and verification methods. However, it accurately covers key concepts like enabling User-ID, configuring user and group mappings, and applying security policies based on user identity.</p>
+        </div>
+        <div class="score-box" style="border-color:#f59e0b">
+            <div class="score-label">Completeness</div>
+            <div class="score-value" style="color:#f59e0b">0.80</div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width:80%;background:#f59e0b"></div>
+            </div>
+            <div class="score-tag" style="background:#f59e0b">Acceptable</div>
+            <p class="score-reason">The Actual Output provides a step-by-step guide to enabling and configuring User-ID on a Palo Alto NGFW, fully addressing all major steps and components required to answer the question, including &#x27;what&#x27; and &#x27;how&#x27; aspects, relevant caveats, and prerequisites, but differs slightly in the configuration details and steps compared to the Expected Output, particularly in the specifics of integrating with Active Directory and applying security policies</p>
+        </div>
+        </div>
+        <div class="response-section">
+            <div class="response-label">LLM Response</div>
+            <div class="markdown-body" data-markdown="To enable and configure User-ID on a Palo Alto NGFW, follow these steps:
+
+1. **Enable User-ID**: Navigate to **Device** &gt; **User Identification** &gt; **User-ID Agent** and click **Add**. Alternatively, you can use the CLI command `set deviceconfig system user-id-agent enable yes`.
+2. **Configure User-ID Agent**: Specify the **Server Name** or **IP Address** of the domain controller or other authentication source. You can also configure **User-ID Agent Interfaces** to define which interfaces will receive user mapping updates.
+3. **Define User Mappings**: Go to **Device** &gt; **User Identification** &gt; **User Mappings** and click **Add**. You can also use the CLI command `set deviceconfig system user-id-mapping &lt;mapping-name&gt;`.
+4. **Configure Group Mappings**: Navigate to **Device** &gt; **User Identification** &gt; **Group Mappings** and click **Add**. This allows you to map Active Directory groups to PAN-OS user groups.
+5. **Integrate with Active Directory or other authentication sources**: Configure the NGFW to integrate with your Active Directory or other authentication sources. This typically involves specifying the **LDAP Server Profile**, **Kerberos Server Profile**, or other authentication settings.
+6. **Verify User-ID Configuration**: Use the CLI command `show user user-id-mappings` to verify that user mappings are being correctly updated.
+
+When creating security policies, remember to consider the following:
+
+* **Zones**: Apply policies to specific zones (e.g., trust, untrust, DMZ) to control traffic flow based on user identity.
+* **Application-IDs**: Use application-IDs to control access to specific applications based on user identity.
+* **Security Profiles**: Apply security profiles (e.g., anti-virus, anti-spyware, URL filtering) to traffic based on user identity.
+
+For more detailed information, refer to the official Palo Alto Networks documentation at [docs.paloaltonetworks.com](http://docs.paloaltonetworks.com)."></div>
+        </div>
+    </div>
+    <div class="footer">Palo Alto Networks RAG Assistant — LLM Evaluation</div>
+</div>
+<script>
+    document.querySelectorAll(".markdown-body[data-markdown]").forEach(el => {
+        el.innerHTML = marked.parse(el.getAttribute("data-markdown"));
+    });
+</script>
+</body>
+</html>
